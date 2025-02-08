@@ -1,0 +1,23 @@
+version: "2"
+
+services:
+  vs_code_dev_100:
+    platform: linux/amd64
+    image: vs_code_dev_100:latest
+    environment:
+      - DOCKER_DEFAULT_PLATFORM=linux/amd64
+    env_file: ./.env
+    build:
+      context: .
+      target: vs_code_dev_100
+    init: true
+    container_name: vs_code_dev_100
+    command: sleep infinity
+    volumes:
+      - "${HOME}/.config:/root/.config"
+      - ${LOCAL_WORKSPACE_FOLDER:-.}:/app
+      - vscode-extensions:/root/.vscode-server/extensions
+      - /var/run/docker.sock:/var/run/docker.sock
+
+volumes:
+  vscode-extensions:
