@@ -1,0 +1,89 @@
+[
+    {
+        "name": "id",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "status",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "species",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "type",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "gender",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "origin",
+        "type": "RECORD",
+        "fields": [
+            {
+                "name": "name",
+                "type": "STRING",
+                "mode": "NULLABLE"
+            },
+            {
+                "name": "url",
+                "type": "STRING",
+                "mode": "NULLABLE"
+            }
+        ]
+    },
+    {
+        "name": "location",
+        "type": "RECORD",
+        "fields": [
+            {
+                "name": "name",
+                "type": "STRING",
+                "mode": "NULLABLE"
+            },
+            {
+                "name": "url",
+                "type": "STRING",
+                "mode": "NULLABLE"
+            }
+        ]
+    },
+    {
+        "name": "image",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "episode",
+        "type": "STRING",
+        "mode": "REPEATED"
+    },
+    {
+        "name": "url",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "created",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "run_datetime",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    }
+]
