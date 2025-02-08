@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - name: landing_dataset
+    description: The Landing Dataset and Landing tables.
+    schema: "landing_dataset"
+    tables:
+      - name: character_table
+      - name: location_table
+      - name: episode_table
