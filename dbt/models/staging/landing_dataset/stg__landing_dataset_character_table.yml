@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg__landing_dataset_character_table
+    description: Landing Dataset Character table.
+
+    columns:
+      - name: id
+        data_tests:
+          - not_null
+          - unique
+      - name: name
+      - name: status
+      - name: species
+      - name: type
+      - name: gender
+      - name: origin
+      - name: location
+      - name: image
+      - name: episode
+      - name: url
+      - name: created
+      - name: run_datetime

@@ -17,3 +17,8 @@ clean-targets:
   - "target"
 
 models:
+  kestra_dbt:
+    staging:
+      +materialized: table
+      landing_dataset:
+        +schema: stage_landing_dataset
