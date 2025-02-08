@@ -1,0 +1,82 @@
+name: run-python-ci
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "uv.lock"
+      - "pyproject.toml"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  mypy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Build Kestra ELT Pipeline image
+        run: docker build -t kestra_elt_pipeline -f Dockerfile . --target python_base
+      - name: Run MyPy
+        run: docker run kestra_elt_pipeline mypy --install-types . --non-interactive
+  isort:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "0.5.29"
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Generate Requirements
+        run: uv export --format requirements-txt --no-hashes --group file_linters > requirements_linters.txt
+      - name: Install Dependencies
+        run: pip install -r requirements_linters.txt
+      - name: Run isort
+        run: isort . --check
+  black:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "0.5.29"
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Generate Requirements
+        run: uv export --format requirements-txt --no-hashes --group file_linters > requirements_linters.txt
+      - name: Install Dependencies
+        run: pip install -r requirements_linters.txt
+      - name: Run black
+        run: black . --check
+  flake8:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install uv
+        uses: astral-sh/setup-uv@v4
+        with:
+          version: "0.5.29"
+      - name: "Set up Python"
+        uses: actions/setup-python@v5
+        with:
+          python-version-file: "pyproject.toml"
+      - name: Generate Requirements
+        run: uv export --format requirements-txt --no-hashes --group file_linters > requirements_linters.txt
+      - name: Install Dependencies
+        run: pip install -r requirements_linters.txt
+      - name: Run flake8
+        run: flake8 .
