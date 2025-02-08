@@ -70,3 +70,19 @@ resource "google_bigquery_dataset" "dbt_db_stage_landing_dataset" {
   location   = "us-central1"
 }
 
+# Artifact Registory Repository
+resource "google_artifact_registry_repository" "kestra_elt_pipeline_ar" {
+  location      = "us-central1"
+  repository_id = "kestra"
+  description   = "Kestra Repository for the ELT Pipeline."
+  format        = "DOCKER"
+
+  cleanup_policies {
+    id     = "delete-untagged"
+    action = "DELETE"
+    condition {
+      tag_state  = "UNTAGGED"
+      older_than = "86400s"
+    }
+  }
+}
