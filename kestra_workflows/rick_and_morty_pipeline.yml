@@ -42,6 +42,7 @@ inputs:
 
 variables:
   LANDING_GCS_BUCKET: "kestra_landing_bucket_1234567890"
+  KESTRA_STORAGE_BUCKET: "kestra-storage-bucket-391"
 
 tasks:
   - id: if_execute_fetch
@@ -78,6 +79,9 @@ tasks:
                 taskRunner:
                   type: io.kestra.plugin.ee.gcp.runner.Batch
                   region: us-central1
+                  bucket: "{{ vars.KESTRA_STORAGE_BUCKET }}"
+                  serviceAccount: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
+                  projectId: "{{ secret('GCP_PROJECT_ID') }}"
                   machineType: "n2d-standard-2"
                   computeResource:
                     cpu: "2000"
@@ -85,13 +89,15 @@ tasks:
               - id: load_bq_from_gcs_jsonl_character
                 type: io.kestra.plugin.gcp.bigquery.LoadFromGcs
                 from:
-                  - "gs://{{ vars.LANDING_GCS_BUCKET }}/character_{{ inputs.uuid_str }}.jsonl"
-                destinationTable: "landing_dataset.character"
+                  - 'gs://{{ vars.LANDING_GCS_BUCKET }}/character_{{ outputs.generate_uuid["vars"]["uuid_str"] }}.jsonl'
+                destinationTable: "landing_dataset.character_table"
                 writeDisposition: WRITE_APPEND
                 createDisposition: CREATE_NEVER
                 autodetect: false
                 format: JSON
                 allowFailure: true
+                serviceAccount: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
+                projectId: "{{ secret('GCP_PROJECT_ID') }}"
           - id: if_job_selected_episode
             type: io.kestra.plugin.core.flow.If
             condition: '{{ inputs.jobs contains "episode" }}'
@@ -107,6 +113,9 @@ tasks:
                 taskRunner:
                   type: io.kestra.plugin.ee.gcp.runner.Batch
                   region: us-central1
+                  bucket: "{{ vars.KESTRA_STORAGE_BUCKET }}"
+                  serviceAccount: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
+                  projectId: "{{ secret('GCP_PROJECT_ID') }}"
                   machineType: "n2d-standard-2"
                   computeResource:
                     cpu: "2000"
@@ -114,13 +123,15 @@ tasks:
               - id: load_bq_from_gcs_jsonl_episode
                 type: io.kestra.plugin.gcp.bigquery.LoadFromGcs
                 from:
-                  - "gs://{{ vars.LANDING_GCS_BUCKET }}/episode_{{ inputs.uuid_str }}.jsonl"
-                destinationTable: "landing_dataset.episode"
+                  - 'gs://{{ vars.LANDING_GCS_BUCKET }}/episode_{{ outputs.generate_uuid["vars"]["uuid_str"] }}.jsonl'
+                destinationTable: "landing_dataset.episode_table"
                 writeDisposition: WRITE_APPEND
                 createDisposition: CREATE_NEVER
                 autodetect: false
                 format: JSON
                 allowFailure: true
+                serviceAccount: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
+                projectId: "{{ secret('GCP_PROJECT_ID') }}"
           - id: if_job_selected_location
             type: io.kestra.plugin.core.flow.If
             condition: '{{ inputs.jobs contains "location" }}'
@@ -136,6 +147,9 @@ tasks:
                 taskRunner:
                   type: io.kestra.plugin.ee.gcp.runner.Batch
                   region: us-central1
+                  bucket: "{{ vars.KESTRA_STORAGE_BUCKET }}"
+                  serviceAccount: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
+                  projectId: "{{ secret('GCP_PROJECT_ID') }}"
                   machineType: "n2d-standard-2"
                   computeResource:
                     cpu: "2000"
@@ -143,13 +157,15 @@ tasks:
               - id: load_bq_from_gcs_jsonl_location
                 type: io.kestra.plugin.gcp.bigquery.LoadFromGcs
                 from:
-                  - "gs://{{ vars.LANDING_GCS_BUCKET }}/location_{{ inputs.uuid_str }}.jsonl"
-                destinationTable: "landing_dataset.location"
+                  - 'gs://{{ vars.LANDING_GCS_BUCKET }}/location_{{ outputs.generate_uuid["vars"]["uuid_str"] }}.jsonl'
+                destinationTable: "landing_dataset.location_table"
                 writeDisposition: WRITE_APPEND
                 createDisposition: CREATE_NEVER
                 autodetect: false
                 format: JSON
                 allowFailure: true
+                serviceAccount: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
+                projectId: "{{ secret('GCP_PROJECT_ID') }}"
   - id: if_execute_dbt
     type: io.kestra.plugin.core.flow.If
     condition: "{{ inputs.execute_dbt }}"
@@ -160,10 +176,14 @@ tasks:
           GCP_PROJECT_ID: "{{ secret('GCP_PROJECT_ID') }}"
         containerImage: "us-central1-docker.pkg.dev/{{ secret('GCP_PROJECT_ID') }}/kestra/kestra-elt-pipeline-dbt:latest"
         commands:
+          - dbt deps
           - dbt build --select {{ inputs.dbt_select_pattern }}
         taskRunner:
           type: io.kestra.plugin.ee.gcp.runner.Batch
           region: us-central1
+          bucket: "{{ vars.KESTRA_STORAGE_BUCKET }}"
+          serviceAccount: "{{ secret('GCP_SERVICE_ACCOUNT_JSON') }}"
+          projectId: "{{ secret('GCP_PROJECT_ID') }}"
           machineType: "n2d-standard-2"
           computeResource:
             cpu: "2000"
