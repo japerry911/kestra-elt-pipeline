@@ -1,0 +1,42 @@
+[
+    {
+        "name": "id",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "air_date",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "episode",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "characters",
+        "type": "STRING",
+        "mode": "REPEATED"
+    },
+    {
+        "name": "url",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "created",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "run_datetime",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    }
+]

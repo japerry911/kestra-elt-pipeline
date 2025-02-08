@@ -626,12 +626,29 @@ wheels = [
 ]
 
 [[package]]
+name = "kestra"
+version = "0.21.13"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "requests" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/26/64/3d196df3337d588342fc0e6912a257f07680ff21d1d0c7817474862a8932/kestra-0.21.13.tar.gz", hash = "sha256:9bdcb0a492acc505bd16afcab211788269689b12eecbb6acbe7d60a6c1a32c89", size = 8172 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/30/f6/0d9cc15b13770fc454b5616db17716624b52be65a38e7f19b1187a6ec3b5/kestra-0.21.13-py3-none-any.whl", hash = "sha256:52abc34af2b8ccba578b1bc57a9e6998a239097a03994214eb57c99077889b86", size = 7606 },
+]
+
+[[package]]
 name = "kestra-elt-pipeline"
 version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "dbt-bigquery" },
     { name = "dbt-core" },
+    { name = "google-cloud-storage" },
+    { name = "kestra" },
+    { name = "pydantic" },
+    { name = "pytz" },
+    { name = "requests" },
 ]
 
 [package.dev-dependencies]
@@ -658,6 +675,11 @@ sqlfluff-ci = [
 requires-dist = [
     { name = "dbt-bigquery", specifier = ">=1.9.0,<2.0.0" },
     { name = "dbt-core", specifier = ">=1.9.0,<2.0.0" },
+    { name = "google-cloud-storage", specifier = ">=2.19.0" },
+    { name = "kestra", specifier = ">=0.21.13" },
+    { name = "pydantic", specifier = ">=2.10.6" },
+    { name = "pytz", specifier = ">=2025.1" },
+    { name = "requests", specifier = ">=2.32.3" },
 ]
 
 [package.metadata.requires-dev]
