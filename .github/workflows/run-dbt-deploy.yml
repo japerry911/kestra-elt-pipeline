@@ -1,6 +1,7 @@
 name: run-dbt-deploy
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
