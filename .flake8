@@ -1,0 +1,7 @@
+[flake8]
+ignore =
+exclude =
+    .venv/*
+    dbt/dbt_packages/*
+max-line-length = 88
+max-complexity = 22
