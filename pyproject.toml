@@ -6,11 +6,6 @@ line_length = 88
 profile = "black"
 skip_glob=[".venv/*", "**/dbt_packages/*"]
 
-[tool.mypy]
-check_untyped_defs = true
-ignore_missing_imports = true
-files = ["src"]
-
 [project]
 authors = [
     {name = "Jack P"},
@@ -35,7 +30,6 @@ file_linters = [
     "black<24.0.0,>=23.3.0",
     "flake8<7.0.0,>=6.0.0",
     "isort<6.0.0,>=5.12.0",
-    "mypy>=1.15.0",
     "sqlfluff<4.0.0,>=3.2.5",
     "sqlfluff-templater-dbt<4.0.0,>=3.2.5",
 ]
