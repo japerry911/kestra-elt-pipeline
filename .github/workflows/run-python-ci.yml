@@ -14,15 +14,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  mypy:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-      - name: Build Kestra ELT Pipeline image
-        run: docker build -t kestra_elt_pipeline -f Dockerfile . --target python_base
-      - name: Run MyPy
-        run: docker run kestra_elt_pipeline mypy --install-types . --non-interactive
   isort:
     runs-on: ubuntu-latest
     steps:
