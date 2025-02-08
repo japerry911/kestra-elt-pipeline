@@ -63,3 +63,10 @@ resource "google_bigquery_table" "character_table" {
   table_id   = "character_table"
   schema     = file("${path.module}/bq_table_schemas/character.json")
 }
+
+# Create a BigQuery dataset for dbt_db_stage_landing_dataset
+resource "google_bigquery_dataset" "dbt_db_stage_landing_dataset" {
+  dataset_id = "dbt_db_stage_landing_dataset"
+  location   = "us-central1"
+}
+
