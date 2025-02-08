@@ -19,7 +19,6 @@
                 "ms-azuretools.vscode-docker",
                 "ms-python.black-formatter",
                 "ms-python.isort",
-                "ms-python.mypy-type-checker",
                 "ms-python.flake8",
                 "innoverio.vscode-dbt-power-user",
                 "kestra-io.kestra",
@@ -29,10 +28,6 @@
                 "dracula-theme.theme-dracula"
             ],
             "settings": {
-                "gopls": {
-                    "ui.completion.usePlaceholders": true,
-                    "ui.semanticTokens": true
-                },
                 "git.autorefresh": true,
                 "github.gitProtocol": "ssh",
                 "workbench.colorTheme": "Dracula Theme",
@@ -40,30 +35,13 @@
                 "workbench.tree.indent": 10,
                 "editor.rulers": [],
                 "python.defaultInterpreterPath": "/opt/venv/bin/python",
-                "python.testing.unittestEnabled": false,
-                "python.testing.pytestEnabled": true,
                 "python.formatting.provider": "black",
                 "python.linting.flake8": true,
                 "python.linting.enabled": true,
                 "python.analysis.diagnosticMode": "openFilesOnly",
-                "python.analysis.diagnosticSeverityOverrides": {
-                    "reportPrivateImportUsage": "none",
-                    "reportGeneralTypeIssues": "none"
-                },
-                "python.testing.pytestArgs": [
-                    "-v",
-                    "--no-header"
-                ],
-                "editor.foldingImportsByDefault": false,
                 "editor.formatOnPaste": false,
                 "editor.formatOnSave": true,
                 "editor.tabSize": 4,
-                "[jinja-sql]": {
-                    "editor.formatOnSave": false
-                },
-                "[jinja-yaml]": {
-                    "editor.tabSize": 2
-                },
                 "editor.insertSpaces": true,
                 "[python]": {
                     "editor.defaultFormatter": "ms-python.black-formatter"
