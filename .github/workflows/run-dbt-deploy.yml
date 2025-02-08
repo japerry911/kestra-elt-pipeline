@@ -1,0 +1,25 @@
+name: run-dbt-deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "dbt/**"
+      - "pyproject.toml"
+      - "uv.lock"
+      - "Dockerfile"
+      - ".dockerignore"
+
+jobs:
+  deploy-to-artifact-registry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      - name: build_push_docker_artifact_registry
+        uses: japerry911/build-push-docker-gcp-artifact-registry-action@v2.2
+        with:
+          gcp_credentials_json: ${{ secrets.GCP_CREDENTIALS }}
+          docker_target: dbt_only
+          tags: us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/kestra/kestra-elt-pipeline-dbt:latest
