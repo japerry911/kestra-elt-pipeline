@@ -1,0 +1,42 @@
+[
+    {
+        "name": "id",
+        "type": "INTEGER",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "name",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "type",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "dimension",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "residents",
+        "type": "STRING",
+        "mode": "REPEATED"
+    },
+    {
+        "name": "url",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "created",
+        "type": "STRING",
+        "mode": "NULLABLE"
+    },
+    {
+        "name": "run_datetime",
+        "type": "TIMESTAMP",
+        "mode": "REQUIRED"
+    }
+]
