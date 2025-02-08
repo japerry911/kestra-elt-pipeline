@@ -1,0 +1,170 @@
+id: rick_and_morty_pipeline
+namespace: pipeline
+
+inputs:
+  - id: execute_fetch
+    type: BOOLEAN
+    required: true
+    defaults: false
+    description: |
+      If True, this process will execute the extraction, otherwise extraction is skipped.
+
+  - id: jobs
+    type: MULTISELECT
+    required: true
+    defaults:
+      - character
+      - episode
+      - location
+    values:
+      - character
+      - episode
+      - location
+    description: |
+      Decide which jobs to fetch from.
+
+  - id: execute_dbt
+    type: BOOLEAN
+    required: true
+    defaults: false
+    description: |
+      If true, execute dbt, otherwise skip dbt.
+
+  - id: dbt_select_pattern
+    type: STRING
+    required: true
+    defaults: "staging.landing_dataset.*"
+    description: The dbt select pattern(s) to run dbt build on.
+    dependsOn:
+      inputs:
+        - execute_dbt
+      condition: "{{ inputs.execute_dbt }}"
+
+variables:
+  LANDING_GCS_BUCKET: "kestra_landing_bucket_1234567890"
+
+tasks:
+  - id: if_execute_fetch
+    type: io.kestra.plugin.core.flow.If
+    condition: "{{ inputs.execute_fetch }}"
+    then:
+      - id: generate_uuid
+        type: io.kestra.plugin.scripts.python.Script
+        beforeCommands:
+          - pip install --upgrade pip
+          - pip install kestra
+        script: |
+          from uuid import uuid4
+
+          from kestra import Kestra
+
+          Kestra.outputs({"uuid_str": str(uuid4())})
+      - id: parallel
+        type: io.kestra.plugin.core.flow.Parallel
+        concurrent: 3
+        tasks:
+          - id: if_job_selected_character
+            type: io.kestra.plugin.core.flow.If
+            condition: '{{ inputs.jobs contains "character" }}'
+            then:
+              - id: fetch_data_character
+                type: io.kestra.plugin.scripts.python.Commands
+                env:
+                  GCP_PROJECT_ID: "{{ secret('GCP_PROJECT_ID')}}"
+                commands:
+                  - python -m integrations.rick_and_morty.main --uuid_str {{ outputs.generate_uuid["vars"]["uuid_str"] }} --job_name character
+                containerImage: "us-central1-docker.pkg.dev/{{ secret('GCP_PROJECT_ID') }}/kestra/kestra-elt-pipeline-python:latest"
+                warningOnStdErr: false
+                taskRunner:
+                  type: io.kestra.plugin.ee.gcp.runner.Batch
+                  region: us-central1
+                  machineType: "n2d-standard-2"
+                  computeResource:
+                    cpu: "2000"
+                    memory: "8192"
+              - id: load_bq_from_gcs_jsonl_character
+                type: io.kestra.plugin.gcp.bigquery.LoadFromGcs
+                from:
+                  - "gs://{{ vars.LANDING_GCS_BUCKET }}/character_{{ inputs.uuid_str }}.jsonl"
+                destinationTable: "landing_dataset.character"
+                writeDisposition: WRITE_APPEND
+                createDisposition: CREATE_NEVER
+                autodetect: false
+                format: JSON
+                allowFailure: true
+          - id: if_job_selected_episode
+            type: io.kestra.plugin.core.flow.If
+            condition: '{{ inputs.jobs contains "episode" }}'
+            then:
+              - id: fetch_data_episode
+                type: io.kestra.plugin.scripts.python.Commands
+                env:
+                  GCP_PROJECT_ID: "{{ secret('GCP_PROJECT_ID')}}"
+                commands:
+                  - python -m integrations.rick_and_morty.main --uuid_str {{ outputs.generate_uuid["vars"]["uuid_str"] }} --job_name episode
+                containerImage: "us-central1-docker.pkg.dev/{{ secret('GCP_PROJECT_ID') }}/kestra/kestra-elt-pipeline-python:latest"
+                warningOnStdErr: false
+                taskRunner:
+                  type: io.kestra.plugin.ee.gcp.runner.Batch
+                  region: us-central1
+                  machineType: "n2d-standard-2"
+                  computeResource:
+                    cpu: "2000"
+                    memory: "8192"
+              - id: load_bq_from_gcs_jsonl_episode
+                type: io.kestra.plugin.gcp.bigquery.LoadFromGcs
+                from:
+                  - "gs://{{ vars.LANDING_GCS_BUCKET }}/episode_{{ inputs.uuid_str }}.jsonl"
+                destinationTable: "landing_dataset.episode"
+                writeDisposition: WRITE_APPEND
+                createDisposition: CREATE_NEVER
+                autodetect: false
+                format: JSON
+                allowFailure: true
+          - id: if_job_selected_location
+            type: io.kestra.plugin.core.flow.If
+            condition: '{{ inputs.jobs contains "location" }}'
+            then:
+              - id: fetch_data_location
+                type: io.kestra.plugin.scripts.python.Commands
+                env:
+                  GCP_PROJECT_ID: "{{ secret('GCP_PROJECT_ID')}}"
+                commands:
+                  - python -m integrations.rick_and_morty.main --uuid_str {{ outputs.generate_uuid["vars"]["uuid_str"] }} --job_name location
+                containerImage: "us-central1-docker.pkg.dev/{{ secret('GCP_PROJECT_ID') }}/kestra/kestra-elt-pipeline-python:latest"
+                warningOnStdErr: false
+                taskRunner:
+                  type: io.kestra.plugin.ee.gcp.runner.Batch
+                  region: us-central1
+                  machineType: "n2d-standard-2"
+                  computeResource:
+                    cpu: "2000"
+                    memory: "8192"
+              - id: load_bq_from_gcs_jsonl_location
+                type: io.kestra.plugin.gcp.bigquery.LoadFromGcs
+                from:
+                  - "gs://{{ vars.LANDING_GCS_BUCKET }}/location_{{ inputs.uuid_str }}.jsonl"
+                destinationTable: "landing_dataset.location"
+                writeDisposition: WRITE_APPEND
+                createDisposition: CREATE_NEVER
+                autodetect: false
+                format: JSON
+                allowFailure: true
+  - id: if_execute_dbt
+    type: io.kestra.plugin.core.flow.If
+    condition: "{{ inputs.execute_dbt }}"
+    then:
+      - id: execute_dbt
+        type: io.kestra.plugin.dbt.cli.DbtCLI
+        env:
+          GCP_PROJECT_ID: "{{ secret('GCP_PROJECT_ID') }}"
+        containerImage: "us-central1-docker.pkg.dev/{{ secret('GCP_PROJECT_ID') }}/kestra/kestra-elt-pipeline-dbt:latest"
+        commands:
+          - dbt build --select {{ inputs.dbt_select_pattern }}
+        taskRunner:
+          type: io.kestra.plugin.ee.gcp.runner.Batch
+          region: us-central1
+          machineType: "n2d-standard-2"
+          computeResource:
+            cpu: "2000"
+            memory: "8192"
