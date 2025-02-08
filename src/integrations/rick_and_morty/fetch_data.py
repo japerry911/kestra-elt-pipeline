@@ -11,6 +11,13 @@ def fetch_data(
     uuid_str: str,
     job_name: Literal["character", "location", "episode"],
 ):
+    """
+    Fetch data from the Rick and Morty API and upload it to GCS.
+
+    Args:
+        uuid_str: The UUID of the run.
+        job_name: The name of the job to fetch data for.
+    """
     logger = get_logger()
 
     rick_and_morty_client = RickAndMortyClient()

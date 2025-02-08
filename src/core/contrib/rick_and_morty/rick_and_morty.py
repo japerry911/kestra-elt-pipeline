@@ -13,6 +13,12 @@ class RickAndMortyClient:
         self.base_url = "https://rickandmortyapi.com/api"
 
     def fetch_characters(self) -> list[Character]:
+        """
+        Fetch characters from the Rick and Morty API.
+
+        Returns:
+            list[Character]: A list of Character objects.
+        """
         self.logger.info("Fetching characters from Rick and Morty API")
 
         use_url = f"{self.base_url}/character"
@@ -60,6 +66,12 @@ class RickAndMortyClient:
         return characters
 
     def fetch_locations(self) -> list[Location]:
+        """
+        Fetch locations from the Rick and Morty API.
+
+        Returns:
+            list[Location]: A list of Location objects.
+        """
         self.logger.info("Fetching locations from Rick and Morty API")
 
         use_url = f"{self.base_url}/location"
@@ -107,6 +119,12 @@ class RickAndMortyClient:
         return locations
 
     def fetch_episodes(self) -> list[Episode]:
+        """
+        Fetch episodes from the Rick and Morty API.
+
+        Returns:
+            list[Episode]: A list of Episode objects.
+        """
         self.logger.info("Fetching episodes from Rick and Morty API")
 
         use_url = f"{self.base_url}/episode"
